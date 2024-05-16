@@ -2,7 +2,7 @@
 import { Color,PieceSymbol,Square } from "chess.js";
 import { useState } from "react";
 import { MOVE } from "../Constants";
-const ChessBoard = ({chess,board,socket,setBoard}:{board:
+const ChessBoard = ({chess,board,socket,setBoard,color}:{board:
   ({
     square: Square;
     type: PieceSymbol;
@@ -11,29 +11,42 @@ const ChessBoard = ({chess,board,socket,setBoard}:{board:
   socket:WebSocket;
   setBoard:any;
   chess:any;
+  color:string |null
   
 
 }) => {
 
   const [from, setFrom] = useState<null | Square>(null);
-  const [toMove, setTo] = useState<null | Square>(null)
+  // const [toMove, setTo] = useState<null | Square>(null)
 
   console.log("Board",board);
   return (
-    <div className="justify-center items-center">
+    <div className="justify-center items-center ">
       {board.map((row,i)=>{
-        return <div key={i} className="flex">
+        return <div key={i} className="flex transition duration-1000">
           {
             row.map((square,j)=>{
-
+              
               const squareRepresent = String.fromCharCode(97+(j%8))+""+(8-i) as Square;
               return <div key={j} className={`w-16 h-16 rounded-[1px] ${(i+j)%2===0 ? 'bg-[#769656]':'bg-[#eeeed2]'}`}
                 onClick={()=>{
                   if(!from){
+                    if(square && square.color!==color){
+                      return;
+                    }
+
                     console.log("from ",squareRepresent);
                     setFrom(squareRepresent);
                   }
                   else{
+
+                    if(square){
+                      setFrom(squareRepresent);
+                      return;
+
+                    }
+                    
+
                    
                     socket.send(JSON.stringify({
                       type:MOVE,
@@ -44,6 +57,8 @@ const ChessBoard = ({chess,board,socket,setBoard}:{board:
                     }))
                     // board.move()
                     try {
+                      
+                      
                       chess.move({
                         from,
                           to:squareRepresent
@@ -51,6 +66,7 @@ const ChessBoard = ({chess,board,socket,setBoard}:{board:
                       
                     } catch (error) {
                       setFrom(null);
+                      console.log("move front end error");
 
                       return;
                     }

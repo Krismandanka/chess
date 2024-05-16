@@ -9,6 +9,7 @@ const Game = () => {
 
 
   const socket = useSocket();
+  const [color, setColor] = useState<string | null>(null)
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState(chess.board());
 
@@ -17,8 +18,8 @@ const Game = () => {
       if(!socket){
         return;
       }
-      console.log("socket",socket);
-      console.log("boar",board);
+      // console.log("socket",socket);
+      // console.log("boar",board);
       socket.onmessage=(event)=>{
         const message = JSON.parse(event.data);
         console.log(message);
@@ -26,6 +27,10 @@ const Game = () => {
           case INIT_GAME:
             // setChess(new Chess());
             setBoard(chess.board());
+            console.log("iniitgame",message.payload.color);
+            setColor(message.payload.color);
+
+
             console.log("Game initialize");``
             break;
           case MOVE:
@@ -52,7 +57,7 @@ const Game = () => {
       <div className='flex justify-center items-center gap-8'>
 
         <div className='justify-center items-center'>
-          <ChessBoard chess={chess} setBoard={setBoard} board={board}  socket={socket}/>
+          <ChessBoard color={color} chess={chess} setBoard={setBoard} board={board}  socket={socket}/>
         </div>
         <button className='text-white bg-[#5d9948] p-2 rounded-xl flex justify-between items-center gap-2' onClick={()=>{
           socket.send(JSON.stringify({

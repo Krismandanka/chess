@@ -14,13 +14,13 @@ class Game {
         this.player1.send(JSON.stringify({
             type: message_1.INIT_GAME,
             payload: {
-                color: "white",
+                color: "w",
             }
         }));
         this.player2.send(JSON.stringify({
             type: message_1.INIT_GAME,
             payload: {
-                color: "black",
+                color: "b",
             }
         }));
     }
