@@ -1,6 +1,8 @@
 import React from 'react'
 import chessBoard from "../../public/chessBoard.png"
 import { useNavigate } from 'react-router-dom'
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+
 // import chessButton from "../../public/chessButton.jpg"
 
 const Landing = () => {
@@ -22,6 +24,12 @@ const Landing = () => {
           <img src="../../public/chessMove.webp" className='bg-[#5d9948]' alt="Logo" width={36} height={36} />
           <p className='text-2xl font-bold'>Play online</p>
         </button>
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
 
       </div>
     </div>
