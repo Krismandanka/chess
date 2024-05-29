@@ -95,11 +95,13 @@ const Game = () => {
         <div className='flex flex-col'>
           <div>
             {user?.fullName}
+            {color}
 
 
           </div>
           <div>
             {opponent}
+            {color == "White" ? "Black" : "White"}
 
           </div>
         </div>
