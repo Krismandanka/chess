@@ -6,21 +6,26 @@ export class Game{
     
     public player1:WebSocket;
     public player2: WebSocket;
+    public userName1:string;
+    public userName2: string;
     private board:Chess;
     private moves: string[];
     private startTime:Date;
     private moveCount=0;
 
-    constructor(player1:WebSocket,player2: WebSocket){
+    constructor(player1:WebSocket,player2: WebSocket,userName1:string,userName2:string){
         this.player1 = player1;
         this.player2 = player2;
         this.board =new Chess();
+        this.userName1=userName1;
+        this.userName2 = userName2;
         this.moves=[];
         this.startTime = new Date();
         this.player1.send(JSON.stringify({
             type:INIT_GAME,
             payload:{
                 color:"w",
+                oppName:userName2
             }
         }))
 
@@ -28,6 +33,7 @@ export class Game{
             type:INIT_GAME,
             payload:{
                 color:"b",
+                oppName:userName1
             }
         }))
 

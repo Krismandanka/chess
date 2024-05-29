@@ -6,12 +6,15 @@ export class GameManager{
     private games: Game[];
     pendinguser: WebSocket | null;
     private users: WebSocket[] ;
+    userName:string ;
+
 
 
     constructor(){
         this.games = [];
         this.pendinguser = null;
         this.users = [];
+        this.userName = "";
     }
 
     addUser(socket : WebSocket){
@@ -32,19 +35,20 @@ export class GameManager{
 
             if(message.type ===INIT_GAME){
                 if(this.pendinguser){
-                    const game = new Game(this.pendinguser,socket);
+                    const game = new Game(this.pendinguser,socket,this.userName,message.name);
                     this.games.push(game);
                     this.pendinguser = null;
                     // console.log("hiiii");
                 }
                 else{
                     this.pendinguser = socket;
+                    this.userName = message.name;
 
                     // console.log("tyyyyy");
                 }
             }
 
-            console.log("bbbbbbb")
+            console.log("bbbbbbb",message)
 
             if(message.type ===MOVE){
                 const game = this.games.find(game => game.player1 === socket || game.player2 === socket);

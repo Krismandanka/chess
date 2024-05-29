@@ -4,23 +4,27 @@ exports.Game = void 0;
 const chess_js_1 = require("chess.js");
 const message_1 = require("./message");
 class Game {
-    constructor(player1, player2) {
+    constructor(player1, player2, userName1, userName2) {
         this.moveCount = 0;
         this.player1 = player1;
         this.player2 = player2;
         this.board = new chess_js_1.Chess();
+        this.userName1 = userName1;
+        this.userName2 = userName2;
         this.moves = [];
         this.startTime = new Date();
         this.player1.send(JSON.stringify({
             type: message_1.INIT_GAME,
             payload: {
                 color: "w",
+                oppName: userName2
             }
         }));
         this.player2.send(JSON.stringify({
             type: message_1.INIT_GAME,
             payload: {
                 color: "b",
+                oppName: userName1
             }
         }));
     }

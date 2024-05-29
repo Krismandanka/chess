@@ -1,7 +1,8 @@
 import React from 'react'
 import chessBoard from "../../public/chessBoard.png"
-import { useNavigate } from 'react-router-dom'
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+// import { useNavigate } from 'react-router-dom'
+import { SignedIn, SignedOut, SignInButton, SignUp, UserButton } from "@clerk/clerk-react";
+import { Link, useNavigate } from 'react-router-dom'
 
 // import chessButton from "../../public/chessButton.jpg"
 
@@ -18,18 +19,24 @@ const Landing = () => {
         <div>
 
         </div>
-        <button className='text-white bg-[#5d9948] p-2 rounded-xl flex justify-between items-center gap-2' onClick={()=>{
+        <button className='text-white bg-[#5d9948] p-2 rounded-xl flex justify-between items-center gap-2' onClick={() => {
           navigate("/game");
         }}>
           <img src="../../public/chessMove.webp" className='bg-[#5d9948]' alt="Logo" width={36} height={36} />
           <p className='text-2xl font-bold'>Play online</p>
         </button>
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
+
+
         <SignedIn>
-          <UserButton />
+          <UserButton afterSignOutUrl='/sign-in' />
         </SignedIn>
+        <SignedOut>
+          <Link to="/sign-in">Sign In</Link>
+        </SignedOut>
+
+
+
+
 
       </div>
     </div>

@@ -1,13 +1,5 @@
-import React from 'react'
+import { SignIn } from "@clerk/clerk-react"
 
-import { SignIn } from '@clerk/clerk-react'
-
-const SignInPage = () => {
-  return (
-    <main className="flex h-screen w-full items-center justify-center">
-      <SignIn />
-    </main>
-  )
+export default function SignInPage() {
+  return <SignIn path="/sign-in" />;
 }
-
-export default SignInPage

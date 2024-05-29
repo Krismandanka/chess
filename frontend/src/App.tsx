@@ -9,29 +9,40 @@ import Game from './Pages/Game';
 import ClearkPro from './ClearkPro';
 // const frontendApin= process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 import SignInPage from './Components/SignInPage';
+import { RecoilRoot } from 'recoil';
+import SignUpPage from './Components/SignUpPage';
+
 function App() {
   // const [count, setCount] = useState(0)
 
   return (
     <>
-    <ClearkPro>
-      <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<Landing />} />
-            <Route path='/game' element={<Game />} />
-            <Route path='/sign-in' element={<SignInPage />} />
+      <RecoilRoot>
+        <BrowserRouter>
+          <ClearkPro>
+            <Routes>
+
+              <Route path='/' element={<Landing />} />
+              <Route path='/game' element={<Game />} />
+              <Route path='/sign-in' element={<SignInPage />} />
+              <Route path='/sign-up' element={<SignUpPage />} />
 
 
-          </Routes>
+
+
+
+            </Routes>
+          </ClearkPro>
         </BrowserRouter>
 
 
-    </ClearkPro>
+      </RecoilRoot>
 
-    
-    
-    
-      
+
+
+
+
+
     </>
   )
 }
