@@ -23,6 +23,7 @@ const Game = () => {
   const [board, setBoard] = useState(chess.board());
   const [start, setStart] = useState(false)
   const [opponent, setOpponent] = useState<string | null>(null)
+  const [winner, setWinner] = useState<string | null>(null);
 
 
   const setMoves = useSetRecoilState(movesAtom);
@@ -72,7 +73,8 @@ const Game = () => {
           console.log("Move", move);
           break;
         case GAME_OVER:
-          console.log("Game Over",);
+          console.log("Game Over", message.payload.winner);
+          setWinner(message.payload.winner)
           break;
       }
     }
@@ -107,7 +109,7 @@ const Game = () => {
         </div>
 
         <div className='justify-center items-center'>
-          <ChessBoard color={color} chess={chess} setBoard={setBoard} board={board} socket={socket} />
+          <ChessBoard color={color === "White" ? "w" : "b"} chess={chess} setBoard={setBoard} board={board} socket={socket} />
         </div>
         {
           !start && (
