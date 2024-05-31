@@ -50,7 +50,15 @@ class Game {
             this.player1.send(JSON.stringify({
                 type: message_1.GAME_OVER,
                 payload: {
-                    winner: this.board.turn() === "w" ? "black" : "white"
+                    winner: this.board.turn() === "w" ? "black" : "white",
+                    winName: this.board.turn() === "w" ? this.userName2 : this.userName1
+                }
+            }));
+            this.player2.send(JSON.stringify({
+                type: message_1.GAME_OVER,
+                payload: {
+                    winner: this.board.turn() === "w" ? "black" : "white",
+                    winName: this.board.turn() === "w" ? this.userName2 : this.userName1
                 }
             }));
             return;

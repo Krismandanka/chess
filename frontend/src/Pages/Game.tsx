@@ -11,6 +11,11 @@ import { useUser } from "@clerk/clerk-react";
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import MovesTable from './MovesTable';
 import { movesStore } from '../atoms/chessBoard';
+import GameEndModal from '../Components/GameEndModal';
+
+
+
+
 const Game = () => {
 
 
@@ -24,7 +29,8 @@ const Game = () => {
   const [start, setStart] = useState(false)
   const [opponent, setOpponent] = useState<string | null>(null)
   const [winner, setWinner] = useState<string | null>(null);
-
+  const [winModal, setWinModal] = useState(false);
+  const [winName, setWinName] = useState<string | null>(null);
 
   const setMoves = useSetRecoilState(movesAtom);
   const setMov = useSetRecoilState(movesStore);
@@ -74,7 +80,10 @@ const Game = () => {
           break;
         case GAME_OVER:
           console.log("Game Over", message.payload.winner);
+
           setWinner(message.payload.winner)
+          setWinName(message.payload.winName)
+          setWinModal(true);
           break;
       }
     }
@@ -92,48 +101,58 @@ const Game = () => {
     return <div>Connecting....</div>
   }
   return (
-    <div className='w-full min-h-screen bg-[#302E2B] relative justify-center py-4 px-3'>
-      <div className='flex justify-center items-center gap-8'>
-        <div className='flex flex-col'>
-          <div>
-            {user?.fullName}
-            {color}
+    <div className=''>
+      {
+        winModal && <GameEndModal win={winner === "white" ? "White" : "Black"} whitePlayer={color === "White" ? user?.fullName : opponent} blackPlayer={color === "White" ? opponent : user?.fullName} setWinModal={setWinModal} />
+      }
 
+
+      <div className='w-full min-h-screen bg-[#302E2B] relative justify-center py-4 px-3'>
+
+
+
+        <div className='flex justify-center items-center gap-8'>
+          <div className='flex flex-col'>
+            <div>
+              {user?.fullName}
+              {color}
+
+
+            </div>
+            <div>
+              {opponent}
+              {color == "White" ? "Black" : "White"}
+
+            </div>
+          </div>
+
+          <div className='justify-center items-center'>
+            <ChessBoard color={color === "White" ? "w" : "b"} chess={chess} setBoard={setBoard} board={board} socket={socket} />
+          </div>
+          {
+            !start && (
+              <button className='text-white bg-[#5d9948] p-2 rounded-xl flex justify-between items-center gap-2' onClick={() => {
+                socket.send(JSON.stringify({
+                  type: INIT_GAME,
+                  name: user?.fullName
+                }));
+                console.log("Socket send");
+              }}>
+                <img src="../../public/chessMove.webp" className='bg-[#5d9948]' alt="Logo" width={36} height={36} />
+                <p className='text-2xl font-bold'>Play online</p>
+              </button>
+
+            )
+          }
+          <div>
+            <MovesTable />
 
           </div>
-          <div>
-            {opponent}
-            {color == "White" ? "Black" : "White"}
 
-          </div>
-        </div>
-
-        <div className='justify-center items-center'>
-          <ChessBoard color={color === "White" ? "w" : "b"} chess={chess} setBoard={setBoard} board={board} socket={socket} />
-        </div>
-        {
-          !start && (
-            <button className='text-white bg-[#5d9948] p-2 rounded-xl flex justify-between items-center gap-2' onClick={() => {
-              socket.send(JSON.stringify({
-                type: INIT_GAME,
-                name: user?.fullName
-              }));
-              console.log("Socket send");
-            }}>
-              <img src="../../public/chessMove.webp" className='bg-[#5d9948]' alt="Logo" width={36} height={36} />
-              <p className='text-2xl font-bold'>Play online</p>
-            </button>
-
-          )
-        }
-        <div>
-          <MovesTable />
 
         </div>
-
 
       </div>
-
     </div>
   )
 }
