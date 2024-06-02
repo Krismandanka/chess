@@ -1,8 +1,8 @@
 // import React from 'react'
 import { Color, PieceSymbol, Square, Move } from "chess.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MOVE } from "../Constants";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilState } from "recoil";
 import { movesAtom, userSelectedMoveIndexAtom } from "../atoms/chessBoard";
 import { movesStore } from "../atoms/chessBoard";
 const ChessBoard = ({
@@ -23,10 +23,53 @@ const ChessBoard = ({
   color: string | null;
 }) => {
   const [from, setFrom] = useState<null | Square>(null);
+  const [lastMove, setLastMove] = useState<{ from: string; to: string } | null>(
+    null,
+  );
 
-  const setMov = useSetRecoilState(movesStore)
-  const setMoves = useSetRecoilState(movesAtom);
+  // const setMov = useSetRecoilState(movesStore)
+  // const setMoves = useSetRecoilState(movesAtom);
+  const [moves, setMoves] = useRecoilState(movesAtom);
+  const [userSelectedMoveIndex, setUserSelectedMoveIndex] = useRecoilState(
+    userSelectedMoveIndexAtom,
+  );
+
   // const [toMove, setTo] = useState<null | Square>(null)
+  useEffect(() => {
+    if (userSelectedMoveIndex !== null) {
+      console.log("huiiiiiiiiiiii", userSelectedMoveIndex),
+        console.log("mobbb", moves);
+      const move = moves[userSelectedMoveIndex];
+      console.log("mmm", move)
+      setLastMove({
+        from: move.from,
+        to: move.to,
+      });
+      console.log("lsat   workk")
+      try {
+        chess.load(move.after);
+      } catch (e) {
+        console.log("move rrr", e)
+      }
+      chess.load(move.after);
+      console.log("new board", chess.board());
+      setBoard(chess.board());
+      return;
+    }
+  }, [userSelectedMoveIndex]);
+
+  useEffect(() => {
+    if (userSelectedMoveIndex !== null) {
+      chess.reset();
+      moves.forEach((move) => {
+        chess.move({ from: move.from, to: move.to });
+      });
+      setBoard(chess.board());
+      setUserSelectedMoveIndex(null);
+    } else {
+      setBoard(chess.board());
+    }
+  }, [moves]);
 
   console.log("Board", board);
   return (
@@ -79,7 +122,7 @@ const ChessBoard = ({
                         }
 
                         setMoves((moves) => [...moves, moveResult]);
-                        setMov((moves) => [...moves, move]);
+                        // setMov((moves) => [...moves, move]);
 
 
                       } catch (error) {

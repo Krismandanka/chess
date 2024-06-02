@@ -33,7 +33,7 @@ const Game = () => {
   const [winName, setWinName] = useState<string | null>(null);
 
   const setMoves = useSetRecoilState(movesAtom);
-  const setMov = useSetRecoilState(movesStore);
+  // const setMov = useSetRecoilState(movesStore);
   const userSelectedMoveIndex = useRecoilValue(userSelectedMoveIndexAtom);
   const userSelectedMoveIndexRef = useRef(userSelectedMoveIndex);
 
@@ -77,7 +77,7 @@ const Game = () => {
           //   setMoves((moves) => [...moves, move]);
           //   return;
           // }
-          setMov((moves) => [...moves, move]);
+          // setMov((moves) => [...moves, move]);
           setMoves((moves) => [...moves, moveResult]);
           console.log("Move", move);
           break;
