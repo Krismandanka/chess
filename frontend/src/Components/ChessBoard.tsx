@@ -1,5 +1,5 @@
 // import React from 'react'
-import { Color, PieceSymbol, Square } from "chess.js";
+import { Color, PieceSymbol, Square, Move } from "chess.js";
 import { useState } from "react";
 import { MOVE } from "../Constants";
 import { useSetRecoilState } from "recoil";
@@ -67,8 +67,9 @@ const ChessBoard = ({
                         })
                       );
                       // board.move()
+                      let moveResult: Move;
                       try {
-                        chess.move({
+                        moveResult = chess.move({
                           from,
                           to: squareRepresent,
                         });
@@ -77,7 +78,7 @@ const ChessBoard = ({
                           to: squareRepresent,
                         }
 
-                        // setMoves((moves) => [...moves, move]);
+                        setMoves((moves) => [...moves, moveResult]);
                         setMov((moves) => [...moves, move]);
 
 

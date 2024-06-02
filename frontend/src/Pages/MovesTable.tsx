@@ -1,7 +1,12 @@
 
 
-import { movesAtom, userSelectedMoveIndexAtom, isBoardFlippedAtom, movesStore } from '../atoms/chessBoard';
-import { Move, Square } from 'chess.js';
+
+import {
+  isBoardFlippedAtom,
+  movesAtom,
+  userSelectedMoveIndexAtom,
+} from "../atoms/chessBoard";
+import { Move } from 'chess.js';
 import { useEffect, useRef } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
@@ -15,23 +20,18 @@ import {
 } from 'lucide-react';
 
 const MovesTable = () => {
-
   const [userSelectedMoveIndex, setUserSelectedMoveIndex] = useRecoilState(
     userSelectedMoveIndexAtom,
   );
   const setIsFlipped = useSetRecoilState(isBoardFlippedAtom);
   const moves = useRecoilValue(movesAtom);
-
-  const mov = useRecoilValue(movesStore);
-  console.log("mov", mov)
   const movesTableRef = useRef<HTMLInputElement>(null);
-  const movesArray = mov.reduce((result, _, index: number, array: { from: Square, to: Square }[]) => {
+  const movesArray = moves.reduce((result, _, index: number, array: Move[]) => {
     if (index % 2 === 0) {
       result.push(array.slice(index, index + 2));
     }
     return result;
-  }, [] as { from: Square, to: Square }[][]);
-  console.log("movesArray", movesArray)
+  }, [] as Move[][]);
 
   useEffect(() => {
     if (movesTableRef && movesTableRef.current) {
@@ -64,7 +64,7 @@ const MovesTable = () => {
                     userSelectedMoveIndex !== null
                       ? userSelectedMoveIndex === index * 2 + movePairIndex
                       : isLastIndex;
-                  // const { san } = move;
+                  const { san } = move;
 
                   return (
                     <div
@@ -74,7 +74,7 @@ const MovesTable = () => {
                         setUserSelectedMoveIndex(index * 2 + movePairIndex);
                       }}
                     >
-                      <span className="text-[#C3C3C0]">{move.to}</span>
+                      <span className="text-[#C3C3C0]">{san}</span>
                     </div>
                   );
                 })}
@@ -155,14 +155,8 @@ const MovesTable = () => {
         </div>
       ) : null}
     </div>
-
-    // <div>
-
-    //   hiii
-
-
-    // </div>
   );
 };
 
 export default MovesTable;
+

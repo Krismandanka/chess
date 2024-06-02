@@ -3,7 +3,7 @@ import ChessBoard from '../Components/ChessBoard'
 import { useSocket } from '../hooks/useSocket'
 import { GAME_OVER, INIT_GAME, MOVE } from '../Constants';
 import { useEffect, useState, useRef } from 'react';
-import { Chess } from 'chess.js';
+import { Chess, Move } from 'chess.js';
 import { movesAtom, userSelectedMoveIndexAtom } from '../atoms/chessBoard';
 import { useUser } from "@clerk/clerk-react";
 
@@ -70,14 +70,15 @@ const Game = () => {
           break;
         case MOVE:
           const move = message.payload;
-          chess.move(move);
+          let moveResult: Move;
+          moveResult = chess.move(move);
           setBoard(chess.board());
-          if (userSelectedMoveIndexRef.current !== null) {
-            setMoves((moves) => [...moves, move]);
-            return;
-          }
+          // if (userSelectedMoveIndexRef.current !== null) {
+          //   setMoves((moves) => [...moves, move]);
+          //   return;
+          // }
           setMov((moves) => [...moves, move]);
-          setMoves((moves) => [...moves, move]);
+          setMoves((moves) => [...moves, moveResult]);
           console.log("Move", move);
           break;
         case GAME_OVER:
