@@ -10,17 +10,25 @@ export class Game{
     public userName2: string;
     private board:Chess;
     private moves: string[];
-    private startTime:Date;
+    // private startTime:Date;
     private moveCount=0;
+    private player1TimeConsumed = 0;
+    private player2TimeConsumed = 0;
+    private startTime = new Date(Date.now());
+    private lastMoveTime = new Date(Date.now());
 
-    constructor(player1:WebSocket,player2: WebSocket,userName1:string,userName2:string){
+    constructor(player1:WebSocket,player2: WebSocket,userName1:string,userName2:string, startTime?: Date){
         this.player1 = player1;
         this.player2 = player2;
         this.board =new Chess();
         this.userName1=userName1;
         this.userName2 = userName2;
         this.moves=[];
-        this.startTime = new Date();
+        if (startTime) {
+            this.startTime = startTime;
+            this.lastMoveTime = startTime;
+          }
+        // this.startTime = new Date();
         this.player1.send(JSON.stringify({
             type:INIT_GAME,
             payload:{
@@ -54,10 +62,20 @@ export class Game{
             console.log("earl y retun2 ");
             console.log(this.moveCount %2 ==1);
             console.log(socket !== this.player2)
-
-
             return;
         }
+        const moveTimestamp = new Date(Date.now());
+
+
+
+        if (this.board.turn() === 'b') {
+            this.player1TimeConsumed = this.player1TimeConsumed + (moveTimestamp.getTime() - this.lastMoveTime.getTime());
+          }
+      
+          if (this.board.turn() === 'w') {
+            this.player2TimeConsumed = this.player2TimeConsumed + (moveTimestamp.getTime() - this.lastMoveTime.getTime());
+          }
+      
 
 
 
@@ -91,21 +109,25 @@ export class Game{
 
             return;
         }
+        this.lastMoveTime = moveTimestamp;
 
-        if(this.moveCount%2===0){
+
+        
             this.player2.send(JSON.stringify({
                 type:MOVE,
-                payload:move
-
+                
+                payload: { move, player1TimeConsumed: this.player1TimeConsumed, player2TimeConsumed: this.player2TimeConsumed }        
             }))
-        }
-        else{
+        
+        
             this.player1.send(JSON.stringify({
                 type:MOVE,
-                payload:move
+                
+                payload: { move, player1TimeConsumed: this.player1TimeConsumed, player2TimeConsumed: this.player2TimeConsumed }          
 
             }))
-        }
+        
+        
         this.moveCount++;
 
 

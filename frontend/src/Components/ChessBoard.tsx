@@ -37,19 +37,19 @@ const ChessBoard = ({
   // const [toMove, setTo] = useState<null | Square>(null)
   useEffect(() => {
     if (userSelectedMoveIndex !== null) {
-      console.log("huiiiiiiiiiiii", userSelectedMoveIndex),
-        console.log("mobbb", moves);
+      // console.log("huiiiiiiiiiiii", userSelectedMoveIndex),
+      // console.log("mobbb", moves);
       const move = moves[userSelectedMoveIndex];
-      console.log("mmm", move)
+      // console.log("mmm", move)
       setLastMove({
         from: move.from,
         to: move.to,
       });
-      console.log("lsat   workk")
+      // console.log("lsat   workk")
       try {
         chess.load(move.after);
       } catch (e) {
-        console.log("move rrr", e)
+        // console.log("move rrr", e)
       }
       chess.load(move.after);
       console.log("new board", chess.board());
@@ -71,7 +71,7 @@ const ChessBoard = ({
     }
   }, [moves]);
 
-  console.log("Board", board);
+  // console.log("Board", board);
   return (
     <div className="justify-center items-center ">
       {board.map((row, i) => {

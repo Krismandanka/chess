@@ -31,6 +31,8 @@ const Game = () => {
   const [winner, setWinner] = useState<string | null>(null);
   const [winModal, setWinModal] = useState(false);
   const [winName, setWinName] = useState<string | null>(null);
+  const [player1TimeConsumed, setPlayer1TimeConsumed] = useState(0);
+  const [player2TimeConsumed, setPlayer2TimeConsumed] = useState(0);
 
   const setMoves = useSetRecoilState(movesAtom);
   // const setMov = useSetRecoilState(movesStore);
@@ -69,8 +71,16 @@ const Game = () => {
           console.log("Game initialize");
           break;
         case MOVE:
-          const move = message.payload;
+          // const move = message.payload;
+          const { move, player1TimeConsumed, player2TimeConsumed } =
+            message.payload;
           let moveResult: Move;
+          setPlayer1TimeConsumed(player1TimeConsumed);
+          setPlayer2TimeConsumed(player2TimeConsumed);
+          if (userSelectedMoveIndexRef.current !== null) {
+            setMoves((moves) => [...moves, move]);
+            return;
+          }
           moveResult = chess.move(move);
           setBoard(chess.board());
           // if (userSelectedMoveIndexRef.current !== null) {
@@ -92,6 +102,33 @@ const Game = () => {
     }
 
   }, [socket])
+
+  useEffect(() => {
+    if (start) {
+      const interval = setInterval(() => {
+        if (chess.turn() === 'w') {
+          setPlayer1TimeConsumed((p) => p + 100);
+        } else {
+          setPlayer2TimeConsumed((p) => p + 100);
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [start, user]);
+  const getTimer = (timeConsumed: number) => {
+    const timeLeftMs = 300000 - timeConsumed;
+    const minutes = Math.floor(timeLeftMs / (1000 * 60));
+    const remainingSeconds = Math.floor((timeLeftMs % (1000 * 60)) / 1000);
+
+    return (
+      <div className="text-white">
+        Time Left: {minutes < 10 ? '0' : ''}
+        {minutes}:{remainingSeconds < 10 ? '0' : ''}
+        {remainingSeconds}
+      </div>
+    );
+  };
+
 
   if (!isLoaded) {
     // Handle loading state however you like
@@ -119,12 +156,16 @@ const Game = () => {
             <div>
               {user?.fullName}
               {color}
+              {
+                getTimer(color === "White" ? player1TimeConsumed : player2TimeConsumed)
+              }
 
 
             </div>
             <div>
               {opponent}
               {color == "White" ? "Black" : "White"}
+              {getTimer(color === "White" ? player2TimeConsumed : player1TimeConsumed)}
 
             </div>
           </div>
