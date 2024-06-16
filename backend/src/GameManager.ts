@@ -1,5 +1,5 @@
 import { Game } from "./Game";
-import { INIT_GAME, MOVE } from "./message";
+import { INIT_GAME, MOVE,TIME_OUT } from "./message";
 import WebSocket from "ws";
 
 export class GameManager{
@@ -57,6 +57,7 @@ export class GameManager{
                     game.makeMove(socket,message.payload);
                 }
             }
+            
         })
 
         

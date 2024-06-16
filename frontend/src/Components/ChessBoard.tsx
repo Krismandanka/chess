@@ -27,6 +27,8 @@ const ChessBoard = ({
     null,
   );
 
+  // console.log("vvvvvvvvvvvvvvvvvvvvvvvv", color)
+
   // const setMov = useSetRecoilState(movesStore)
   // const setMoves = useSetRecoilState(movesAtom);
   const [moves, setMoves] = useRecoilState(movesAtom);
@@ -112,16 +114,16 @@ const ChessBoard = ({
                       // board.move()
                       let moveResult: Move;
                       try {
-                        moveResult = chess.move({
-                          from,
-                          to: squareRepresent,
-                        });
-                        const move = {
-                          from,
-                          to: squareRepresent,
-                        }
+                        // moveResult = chess.move({
+                        //   from,
+                        //   to: squareRepresent,
+                        // });
+                        // const move = {
+                        //   from,
+                        //   to: squareRepresent,
+                        // }
 
-                        setMoves((moves) => [...moves, moveResult]);
+                        // setMoves((moves) => [...moves, moveResult]);
                         // setMov((moves) => [...moves, move]);
 
 
@@ -138,9 +140,10 @@ const ChessBoard = ({
                   }}
                 >
                   <div className="w-full justify-center flex h-full">
-                    <div className="h-full justify-center flex flex-col ">
+                    <div className={`h-full justify-center flex flex-col `}>
                       {square ? (
                         <img
+
                           src={`https://images.chesscomfiles.com/chess-themes/pieces/neo/150/${square?.color === "b"
                             ? `b${square.type}`
                             : `w${square.type}`

@@ -1,13 +1,13 @@
 // import React from 'react'
 import ChessBoard from '../Components/ChessBoard'
 import { useSocket } from '../hooks/useSocket'
-import { GAME_OVER, INIT_GAME, MOVE } from '../Constants';
+import { GAME_OVER, INIT_GAME, MOVE, TIME_UP } from '../Constants';
 import { useEffect, useState, useRef } from 'react';
 import { Chess, Move } from 'chess.js';
 import { movesAtom, userSelectedMoveIndexAtom } from '../atoms/chessBoard';
 import { useUser } from "@clerk/clerk-react";
 
-
+import { useParams } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import MovesTable from './MovesTable';
 import { movesStore } from '../atoms/chessBoard';
@@ -21,6 +21,8 @@ const Game = () => {
 
   const socket = useSocket();
   const { isSignedIn, user, isLoaded } = useUser();
+  const { gameId } = useParams();
+  // console.log("gameif", gameId);
 
 
   const [color, setColor] = useState<string | null>(null)
@@ -98,6 +100,13 @@ const Game = () => {
           setWinName(message.payload.winName)
           setWinModal(true);
           break;
+        case TIME_UP:
+          console.log("Game Over", message.payload.winner);
+
+          setWinner(message.payload.winner)
+          setWinName(message.payload.winName)
+          setWinModal(true);
+          break;
       }
     }
 
@@ -108,15 +117,20 @@ const Game = () => {
       const interval = setInterval(() => {
         if (chess.turn() === 'w') {
           setPlayer1TimeConsumed((p) => p + 100);
+
+
         } else {
           setPlayer2TimeConsumed((p) => p + 100);
+
         }
       }, 100);
       return () => clearInterval(interval);
     }
-  }, [start, user]);
+  }, [start]);
   const getTimer = (timeConsumed: number) => {
-    const timeLeftMs = 300000 - timeConsumed;
+    const timeLeftMs = 20000 - timeConsumed;
+
+
     const minutes = Math.floor(timeLeftMs / (1000 * 60));
     const remainingSeconds = Math.floor((timeLeftMs % (1000 * 60)) / 1000);
 
@@ -170,7 +184,7 @@ const Game = () => {
             </div>
           </div>
 
-          <div className='justify-center items-center'>
+          <div className={`justify-center items-center `}>
             <ChessBoard color={color === "White" ? "w" : "b"} chess={chess} setBoard={setBoard} board={board} socket={socket} />
           </div>
           {

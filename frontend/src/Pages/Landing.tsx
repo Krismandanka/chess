@@ -20,7 +20,7 @@ const Landing = () => {
 
         </div>
         <button className='text-white bg-[#5d9948] p-2 rounded-xl flex justify-between items-center gap-2' onClick={() => {
-          navigate("/game");
+          navigate("/game/random");
         }}>
           <img src="../../public/chessMove.webp" className='bg-[#5d9948]' alt="Logo" width={36} height={36} />
           <p className='text-2xl font-bold'>Play online</p>
