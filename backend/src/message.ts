@@ -11,5 +11,6 @@ export const GAME_ALERT = 'game_alert';
 export const GAME_ADDED = 'game_added';
 export const GAME_TIME = 'game_time';
 export const TIME_OUT = 'time_out';
+export const CHAT_MESSAGE = "chat_message";
 
 

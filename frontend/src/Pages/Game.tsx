@@ -1,7 +1,7 @@
 // import React from 'react'
 import ChessBoard from '../Components/ChessBoard'
 import { useSocket } from '../hooks/useSocket'
-import { GAME_OVER, INIT_GAME, MOVE, TIME_UP } from '../Constants';
+import { GAME_OVER, INIT_GAME, MOVE, TIME_UP, ABANDONED, CHAT_MESSAGE } from '../Constants';
 import { useEffect, useState, useRef } from 'react';
 import { Chess, Move } from 'chess.js';
 import { movesAtom, userSelectedMoveIndexAtom } from '../atoms/chessBoard';
@@ -12,17 +12,28 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import MovesTable from './MovesTable';
 import { movesStore } from '../atoms/chessBoard';
 import GameEndModal from '../Components/GameEndModal';
+import Chat from '../Components/Chat';
+
+// interface chatMess {
+
+// }
+
+interface IResult {
 
 
+  isOpp: boolean;
+  message: string;
 
+
+}
 
 const Game = () => {
 
 
   const socket = useSocket();
   const { isSignedIn, user, isLoaded } = useUser();
-  const { gameId } = useParams();
-  // console.log("gameif", gameId);
+  // const { gameId } = useParams();
+  console.log("gameif");
 
 
   const [color, setColor] = useState<string | null>(null)
@@ -35,13 +46,14 @@ const Game = () => {
   const [winName, setWinName] = useState<string | null>(null);
   const [player1TimeConsumed, setPlayer1TimeConsumed] = useState(0);
   const [player2TimeConsumed, setPlayer2TimeConsumed] = useState(0);
+  const [chatMessages, setChatMessages] = useState<IResult[]>([]);
 
   const setMoves = useSetRecoilState(movesAtom);
   // const setMov = useSetRecoilState(movesStore);
   const userSelectedMoveIndex = useRecoilValue(userSelectedMoveIndexAtom);
   const userSelectedMoveIndexRef = useRef(userSelectedMoveIndex);
 
-
+  console.log("color1", color);
 
 
   useEffect(() => {
@@ -107,28 +119,64 @@ const Game = () => {
           setWinName(message.payload.winName)
           setWinModal(true);
           break;
+        case ABANDONED:
+          console.log("Game Over", message.payload.winner);
+
+          setWinner(message.payload.winner)
+          setWinName(message.payload.winName)
+          setWinModal(true);
+          break;
+        case CHAT_MESSAGE:
+          const mess = message.payload.mess;
+          const colorMess = message.payload.colorMess;
+          // console.log("messs", mess)
+          console.log("coo", colorMess);
+          console.log("color", opponent)
+          // console.log("CHat message in fronend ", message.payload);
+          if (color === colorMess) {
+            const chatCompo = {
+              isOpp: true,
+              message: mess
+
+            }
+            setChatMessages((chat: IResult[]) => [...chat, chatCompo])
+            // setMyArray(oldArray => [...oldArray, newElement]);
+            // 
+          }
+          else {
+            const chatCompo = {
+              isOpp: false,
+              message: mess
+
+            }
+            setChatMessages((chat: IResult[]) => [...chat, chatCompo])
+            console.log("onnnnnnnnnnnnnnnnn", chatMessages);
+          }
+
+
+          break;
       }
     }
 
   }, [socket])
 
-  useEffect(() => {
-    if (start) {
-      const interval = setInterval(() => {
-        if (chess.turn() === 'w') {
-          setPlayer1TimeConsumed((p) => p + 100);
+  // useEffect(() => {
+  //   if (start) {
+  //     const interval = setInterval(() => {
+  //       if (chess.turn() === 'w') {
+  //         setPlayer1TimeConsumed((p) => p + 100);
 
 
-        } else {
-          setPlayer2TimeConsumed((p) => p + 100);
+  //       } else {
+  //         setPlayer2TimeConsumed((p) => p + 100);
 
-        }
-      }, 100);
-      return () => clearInterval(interval);
-    }
-  }, [start]);
+  //       }
+  //     }, 100);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [start]);
   const getTimer = (timeConsumed: number) => {
-    const timeLeftMs = 20000 - timeConsumed;
+    const timeLeftMs = 200000 - timeConsumed;
 
 
     const minutes = Math.floor(timeLeftMs / (1000 * 60));
@@ -211,6 +259,7 @@ const Game = () => {
         </div>
 
       </div>
+      <Chat socket={socket} chatMessages={chatMessages} />
     </div>
   )
 }

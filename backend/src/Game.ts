@@ -1,7 +1,7 @@
 import { Chess } from "chess.js";
 import WebSocket from "ws";
-import { GAME_OVER, INIT_GAME, MOVE } from "./message";
-const GAME_TIME_MS = 20000;
+import { CHAT_MESSAGE, GAME_OVER, INIT_GAME, MOVE } from "./message";
+const GAME_TIME_MS = 200000;
 
 
 export class Game {
@@ -58,6 +58,31 @@ export class Game {
         },
       })
     );
+  }
+
+  chatMessage(socket: WebSocket,mess:string){
+    const colorMess = socket === this.player1 ? "White":"Black";
+    console.log("in chtMESSAGE APP color",colorMess);
+    this.player1.send(
+      JSON.stringify({
+        type: CHAT_MESSAGE,
+        payload: {
+          colorMess,
+          mess
+        },
+      })
+    );
+
+    this.player2.send(
+      JSON.stringify({
+        type: CHAT_MESSAGE,
+        payload: {
+          colorMess,
+          mess
+        },
+      })
+    );
+
   }
 
   makeMove(

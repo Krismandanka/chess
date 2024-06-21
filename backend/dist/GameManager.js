@@ -33,6 +33,14 @@ class GameManager {
                     // console.log("tyyyyy");
                 }
             }
+            if (message.type === message_1.CHAT_MESSAGE) {
+                const game = this.games.find(game => game.player1 === socket || game.player2 === socket);
+                if (game) {
+                    console.log("game finf fro message");
+                    console.log("backend chat message", message.payload);
+                    game.chatMessage(socket, message.payload.mess);
+                }
+            }
             console.log("bbbbbbb", message);
             if (message.type === message_1.MOVE) {
                 const game = this.games.find(game => game.player1 === socket || game.player2 === socket);

@@ -27,7 +27,7 @@ const ChessBoard = ({
     null,
   );
 
-  // console.log("vvvvvvvvvvvvvvvvvvvvvvvv", color)
+  console.log("vvvvvvvvvvvvvvvvvvvvvvvv", color)
 
   // const setMov = useSetRecoilState(movesStore)
   // const setMoves = useSetRecoilState(movesAtom);

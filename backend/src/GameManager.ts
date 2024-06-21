@@ -1,5 +1,5 @@
 import { Game } from "./Game";
-import { INIT_GAME, MOVE,TIME_OUT } from "./message";
+import { CHAT_MESSAGE, INIT_GAME, MOVE,TIME_OUT } from "./message";
 import WebSocket from "ws";
 
 export class GameManager{
@@ -46,6 +46,17 @@ export class GameManager{
 
                     // console.log("tyyyyy");
                 }
+            }
+            if(message.type ===CHAT_MESSAGE){
+                const game = this.games.find(game => game.player1 === socket || game.player2 === socket);
+                if(game){
+                    console.log("game finf fro message")
+                    console.log("backend chat message",message.payload)
+                    game.chatMessage(socket,message.payload.mess)
+                    
+                }
+                
+                
             }
 
             console.log("bbbbbbb",message)

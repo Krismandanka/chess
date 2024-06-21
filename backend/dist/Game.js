@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Game = void 0;
 const chess_js_1 = require("chess.js");
 const message_1 = require("./message");
-const GAME_TIME_MS = 20000;
+const GAME_TIME_MS = 200000;
 class Game {
     constructor(player1, player2, userName1, userName2, startTime) {
         this.timer = null;
@@ -46,6 +46,24 @@ class Game {
             payload: {
                 color: "Black",
                 oppName: userName1,
+            },
+        }));
+    }
+    chatMessage(socket, mess) {
+        const colorMess = socket === this.player1 ? "White" : "Black";
+        console.log("in chtMESSAGE APP color", colorMess);
+        this.player1.send(JSON.stringify({
+            type: message_1.CHAT_MESSAGE,
+            payload: {
+                colorMess,
+                mess
+            },
+        }));
+        this.player2.send(JSON.stringify({
+            type: message_1.CHAT_MESSAGE,
+            payload: {
+                colorMess,
+                mess
             },
         }));
     }
