@@ -3,21 +3,14 @@
 import mongoose,{InferSchemaType,model,Schema} from "mongoose";
 // import { Move } from "chess.js";
 const GameSchema = new Schema({
-    player1:{
-        type:String,
-        require:true
-    },
-    player2:{
-        type:String,
-        require:true
-    },
+    
     whitePlayer:{
-        type:mongoose.Types.ObjectId,
+        type:Schema.Types.ObjectId,
         require:true,
         ref:"User"
     },
     blackPlayer:{
-        type:mongoose.Types.ObjectId,
+        type:Schema.Types.ObjectId,
         require:true,
         ref:"User"
     },
@@ -30,7 +23,7 @@ const GameSchema = new Schema({
         default:"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     },
     moves:[{
-       type:mongoose.Types.ObjectId,
+       type:Schema.Types.ObjectId,
        ref:"MoveDb"
     }]
 

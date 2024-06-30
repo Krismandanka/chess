@@ -14,13 +14,13 @@ const userSchema = new Schema({
     },
     gameAsWhite:[
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: "Game",
         },
     ],
     gameAsBlack:[
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: "Game",
         },
     ]

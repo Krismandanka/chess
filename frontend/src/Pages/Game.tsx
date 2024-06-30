@@ -33,7 +33,7 @@ const Game = () => {
   const socket = useSocket();
   const { isSignedIn, user, isLoaded } = useUser();
   // const { gameId } = useParams();
-  console.log("gameif");
+  console.log("gameif", user?.emailAddresses[0].emailAddress);
 
 
   const [color, setColor] = useState<string | null>(null)
@@ -240,7 +240,8 @@ const Game = () => {
               <button className='text-white bg-[#5d9948] p-2 rounded-xl flex justify-between items-center gap-2' onClick={() => {
                 socket.send(JSON.stringify({
                   type: INIT_GAME,
-                  name: user?.fullName
+                  name: user?.fullName,
+                  email: user?.emailAddresses[0].emailAddress
                 }));
                 console.log("Socket send");
               }}>

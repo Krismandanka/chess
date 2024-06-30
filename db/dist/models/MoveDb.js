@@ -36,4 +36,5 @@ const MoveSchema = new mongoose_1.Schema({
         type: String
     },
 }, { timestamps: true });
-exports.default = (0, mongoose_1.model)("MoveDb", MoveSchema);
+const MoveDb = (0, mongoose_1.model)("MoveDb", MoveSchema);
+exports.default = MoveDb;

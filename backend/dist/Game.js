@@ -8,13 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Game = void 0;
 const chess_js_1 = require("chess.js");
 const message_1 = require("./message");
+// import {GameDb} from "../../db/src/models/GameDb";
+// const GameDb = require("../../db/src/models/GameDb");
+// const User = require("../../db/src/models/User");
+const GameDb_1 = __importDefault(require("./models/GameDb"));
+const MoveDb_1 = __importDefault(require("./models/MoveDb"));
 const GAME_TIME_MS = 200000;
 class Game {
-    constructor(player1, player2, userName1, userName2, startTime) {
+    constructor(player1, player2, userName1, userName2, email1, email2, gameId, startTime) {
         this.timer = null;
         this.moveTimer = null;
         // private startTime:Date;
@@ -33,7 +41,11 @@ class Game {
             this.startTime = startTime;
             this.lastMoveTime = startTime;
         }
-        // this.startTime = new Date();
+        this.startTime = new Date();
+        this.gameId = gameId;
+        // const gameDb = this.gameDbAdd(email1,email2);
+        // this.gameId = gameDb.id;
+        console.log("gameidin classssssss", this.gameId);
         this.player1.send(JSON.stringify({
             type: message_1.INIT_GAME,
             payload: {
@@ -48,6 +60,12 @@ class Game {
                 oppName: userName1,
             },
         }));
+    }
+    GameFind() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let gg = yield GameDb_1.default.findById({ _id: this.gameId });
+            console.log("ggg", gg);
+        });
     }
     chatMessage(socket, mess) {
         const colorMess = socket === this.player1 ? "White" : "Black";
@@ -67,73 +85,107 @@ class Game {
             },
         }));
     }
+    // async gameDbAdd(email1:string,email2:string){
+    //   let u1:any = await User.find({email1});
+    //   let u2:any= await User.find({email2});
+    //   if(!u1){
+    //     u1 = await User.create({email1});
+    //   }
+    //   if(!u2){
+    //     u2 = await User.create({email2});
+    //   }
+    //   const game = await GameDb.create({whitePlayer:u1._id,blackPlayer:u2._id});
+    //   return game;
+    // }
+    addMoveToDb(move) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let moveInDb = yield MoveDb_1.default.create(move);
+            yield GameDb_1.default.findByIdAndUpdate({
+                _id: this.gameId
+            }, {
+                $push: {
+                    moves: moveInDb._id,
+                },
+            }, { new: true });
+        });
+    }
     makeMove(socket, move) {
-        console.log("move ahhhhhhhhhhhhhhh", move);
-        if (this.moveCount % 2 == 0 && socket !== this.player1) {
-            console.log("earl y retun1 ");
-            return;
-        }
-        if (this.moveCount % 2 == 1 && socket !== this.player2) {
-            console.log("earl y retun2 ");
-            console.log(this.moveCount % 2 == 1);
-            console.log(socket !== this.player2);
-            return;
-        }
-        const moveTimestamp = new Date(Date.now());
-        if (this.board.turn() === "w") {
-            this.player1TimeConsumed =
-                this.player1TimeConsumed +
-                    (moveTimestamp.getTime() - this.lastMoveTime.getTime());
-        }
-        if (this.board.turn() === "b") {
-            this.player2TimeConsumed =
-                this.player2TimeConsumed +
-                    (moveTimestamp.getTime() - this.lastMoveTime.getTime());
-        }
-        this.resetAbandonTimer();
-        this.resetMoveTimer();
-        try {
-            this.board.move(move);
-        }
-        catch (error) {
-            console.log("move erroe", error);
-            return;
-        }
-        if (this.board.isGameOver()) {
-            this.player1.send(JSON.stringify({
-                type: message_1.GAME_OVER,
-                payload: {
-                    winner: this.board.turn() === "w" ? "black" : "white",
-                    winName: this.board.turn() === "w" ? this.userName2 : this.userName1,
-                },
-            }));
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("move ahhhhhhhhhhhhhhh", move);
+            this.GameFind();
+            if (this.moveCount % 2 == 0 && socket !== this.player1) {
+                console.log("earl y retun1 ");
+                return;
+            }
+            if (this.moveCount % 2 == 1 && socket !== this.player2) {
+                console.log("earl y retun2 ");
+                console.log(this.moveCount % 2 == 1);
+                console.log(socket !== this.player2);
+                return;
+            }
+            const moveTimestamp = new Date(Date.now());
+            if (this.board.turn() === "w") {
+                this.player1TimeConsumed =
+                    this.player1TimeConsumed +
+                        (moveTimestamp.getTime() - this.lastMoveTime.getTime());
+            }
+            if (this.board.turn() === "b") {
+                this.player2TimeConsumed =
+                    this.player2TimeConsumed +
+                        (moveTimestamp.getTime() - this.lastMoveTime.getTime());
+            }
+            this.resetAbandonTimer();
+            this.resetMoveTimer();
+            try {
+                let moDb = this.board.move(move);
+                this.addMoveToDb(moDb);
+            }
+            catch (error) {
+                console.log("move erroe", error);
+                return;
+            }
+            if (this.board.isGameOver()) {
+                this.player1.send(JSON.stringify({
+                    type: message_1.GAME_OVER,
+                    payload: {
+                        winner: this.board.turn() === "w" ? "black" : "white",
+                        winName: this.board.turn() === "w" ? this.userName2 : this.userName1,
+                    },
+                }));
+                this.player2.send(JSON.stringify({
+                    type: message_1.GAME_OVER,
+                    payload: {
+                        winner: this.board.turn() === "w" ? "black" : "white",
+                        winName: this.board.turn() === "w" ? this.userName2 : this.userName1,
+                    },
+                }));
+                let winDb = this.board.turn() === "w" ? "BlackWin" : "WhiteWin";
+                yield GameDb_1.default.findByIdAndUpdate({
+                    _id: this.gameId
+                }, {
+                    result: winDb
+                }, { new: true });
+                return;
+            }
+            this.lastMoveTime = moveTimestamp;
             this.player2.send(JSON.stringify({
-                type: message_1.GAME_OVER,
+                type: message_1.MOVE,
                 payload: {
-                    winner: this.board.turn() === "w" ? "black" : "white",
-                    winName: this.board.turn() === "w" ? this.userName2 : this.userName1,
+                    move,
+                    player1TimeConsumed: this.player1TimeConsumed,
+                    player2TimeConsumed: this.player2TimeConsumed,
                 },
             }));
-            return;
-        }
-        this.lastMoveTime = moveTimestamp;
-        this.player2.send(JSON.stringify({
-            type: message_1.MOVE,
-            payload: {
-                move,
-                player1TimeConsumed: this.player1TimeConsumed,
-                player2TimeConsumed: this.player2TimeConsumed,
-            },
-        }));
-        this.player1.send(JSON.stringify({
-            type: message_1.MOVE,
-            payload: {
-                move,
-                player1TimeConsumed: this.player1TimeConsumed,
-                player2TimeConsumed: this.player2TimeConsumed,
-            },
-        }));
-        this.moveCount++;
+            this.player1.send(JSON.stringify({
+                type: message_1.MOVE,
+                payload: {
+                    move,
+                    player1TimeConsumed: this.player1TimeConsumed,
+                    player2TimeConsumed: this.player2TimeConsumed,
+                },
+            }));
+            this.moveCount++;
+        });
     }
     getPlayer1TimeConsumed() {
         if (this.board.turn() === 'w') {

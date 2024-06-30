@@ -57,4 +57,5 @@ const GameSchema = new mongoose_1.Schema({
             ref: "MoveDb"
         }]
 }, { timestamps: true });
-exports.default = (0, mongoose_1.model)("GameDb", GameSchema);
+const GameDb = (0, mongoose_1.model)("GameDb", GameSchema);
+exports.default = GameDb;

@@ -1,6 +1,16 @@
-import { Chess } from "chess.js";
+import { Chess, Move } from "chess.js";
 import WebSocket from "ws";
 import { CHAT_MESSAGE, GAME_OVER, INIT_GAME, MOVE } from "./message";
+// import {GameDb} from "../../db/src/models/GameDb";
+// const GameDb = require("../../db/src/models/GameDb");
+// const User = require("../../db/src/models/User");
+import GameDb from "./models/GameDb";
+import User from "./models/User";
+import MoveDb from "./models/MoveDb";
+// const MoveDb = require("../../db/src/models/MoveDb");
+// import User from "../../db/src/models/User";
+import {ObjectId} from "mongoose";
+
 const GAME_TIME_MS = 200000;
 
 
@@ -13,6 +23,7 @@ export class Game {
   private moves: string[];
   private timer: NodeJS.Timeout | null = null;
   private moveTimer: NodeJS.Timeout | null = null;
+  public gameId:string;
 
   // private startTime:Date;
   private moveCount = 0;
@@ -26,7 +37,10 @@ export class Game {
     player2: WebSocket,
     userName1: string,
     userName2: string,
-    startTime?: Date
+    email1:string,
+    email2:string,
+    gameId:string,
+    startTime?: Date,
   ) {
     this.player1 = player1;
     this.player2 = player2;
@@ -38,7 +52,12 @@ export class Game {
       this.startTime = startTime;
       this.lastMoveTime = startTime;
     }
-    // this.startTime = new Date();
+    this.startTime = new Date();
+    this.gameId = gameId;
+
+  // const gameDb = this.gameDbAdd(email1,email2);
+  // this.gameId = gameDb.id;
+    console.log("gameidin classssssss",this.gameId);
     this.player1.send(
       JSON.stringify({
         type: INIT_GAME,
@@ -59,6 +78,17 @@ export class Game {
       })
     );
   }
+
+
+
+
+  async GameFind(){
+    let gg = await GameDb.findById({_id:this.gameId});
+    console.log("ggg",gg);
+
+  }
+
+  
 
   chatMessage(socket: WebSocket,mess:string){
     const colorMess = socket === this.player1 ? "White":"Black";
@@ -85,7 +115,40 @@ export class Game {
 
   }
 
-  makeMove(
+
+  // async gameDbAdd(email1:string,email2:string){
+  //   let u1:any = await User.find({email1});
+  //   let u2:any= await User.find({email2});
+  //   if(!u1){
+  //     u1 = await User.create({email1});
+  //   }
+  //   if(!u2){
+  //     u2 = await User.create({email2});
+  //   }
+  //   const game = await GameDb.create({whitePlayer:u1._id,blackPlayer:u2._id});
+  //   return game;
+
+  // }
+  async addMoveToDb(move:Move){
+
+
+    let moveInDb = await MoveDb.create(move);
+
+
+
+    await GameDb.findByIdAndUpdate({
+      _id:this.gameId
+    },
+    {
+      $push: {
+        moves: moveInDb._id,
+      },
+    },
+    { new: true }
+  )
+  }
+
+  async makeMove(
     socket: WebSocket,
     move: {
       from: string;
@@ -93,6 +156,7 @@ export class Game {
     }
   ) {
     console.log("move ahhhhhhhhhhhhhhh", move);
+    this.GameFind();
 
     if (this.moveCount % 2 == 0 && socket !== this.player1) {
       console.log("earl y retun1 ");
@@ -121,7 +185,10 @@ export class Game {
     this.resetMoveTimer();
 
     try {
-      this.board.move(move);
+      let moDb = this.board.move(move);
+      this.addMoveToDb(moDb);
+      
+
     } catch (error) {
       console.log("move erroe", error);
       return;
@@ -148,6 +215,16 @@ export class Game {
           },
         })
       );
+
+      let winDb  = this.board.turn() === "w" ? "BlackWin" : "WhiteWin"
+      await GameDb.findByIdAndUpdate({
+        _id:this.gameId
+      },
+      {
+        result:winDb
+      },
+      { new: true }
+    )
 
       return;
     }
