@@ -11,16 +11,18 @@ const ChessBoard = ({
   socket,
   setBoard,
   color,
+  isArch
 }: {
   board: ({
     square: Square;
     type: PieceSymbol;
     color: Color;
   } | null)[][];
-  socket: WebSocket;
+  socket: WebSocket | null;
   setBoard: any;
   chess: any;
   color: string | null;
+  isArch: boolean
 }) => {
   const [from, setFrom] = useState<null | Square>(null);
   const [lastMove, setLastMove] = useState<{ from: string; to: string } | null>(
@@ -88,56 +90,8 @@ const ChessBoard = ({
                   key={j}
                   className={`w-16 h-16 rounded-[1px] ${(i + j) % 2 === 0 ? "bg-[#769656]" : "bg-[#eeeed2]"
                     }`}
-                  onClick={() => {
-                    if (!from) {
-                      if (square && square.color !== color) {
-                        return;
-                      }
-
-                      console.log("from ", squareRepresent);
-                      setFrom(squareRepresent);
-                    } else {
-                      if (square && square.color === color) {
-                        setFrom(squareRepresent);
-                        return;
-                      }
-
-                      socket.send(
-                        JSON.stringify({
-                          type: MOVE,
-                          payload: {
-                            from,
-                            to: squareRepresent,
-                          },
-                        })
-                      );
-                      // board.move()
-                      let moveResult: Move;
-                      try {
-                        // moveResult = chess.move({
-                        //   from,
-                        //   to: squareRepresent,
-                        // });
-                        // const move = {
-                        //   from,
-                        //   to: squareRepresent,
-                        // }
-
-                        // setMoves((moves) => [...moves, moveResult]);
-                        // setMov((moves) => [...moves, move]);
 
 
-                      } catch (error) {
-                        setFrom(null);
-                        console.log("move front end error");
-
-                        return;
-                      }
-
-                      setBoard(chess.board());
-                      setFrom(null);
-                    }
-                  }}
                 >
                   <div className="w-full justify-center flex h-full">
                     <div className={`h-full justify-center flex flex-col `}>

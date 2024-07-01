@@ -233,7 +233,7 @@ const Game = () => {
           </div>
 
           <div className={`justify-center items-center `}>
-            <ChessBoard color={color === "White" ? "w" : "b"} chess={chess} setBoard={setBoard} board={board} socket={socket} />
+            <ChessBoard color={color === "White" ? "w" : "b"} chess={chess} setBoard={setBoard} board={board} socket={socket} isArch={false} />
           </div>
           {
             !start && (
