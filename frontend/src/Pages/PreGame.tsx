@@ -12,7 +12,7 @@ import MovesTable from './MovesTable';
 import ChessBoard from '../Components/ChessBoard';
 import { useSocket } from '../hooks/useSocket';
 const PreGame = () => {
-    const socket = useSocket();
+    const socket:WebSocket|null = useSocket();
     const [chess, setChess] = useState(new Chess());
     const [board, setBoard] = useState(chess.board());
     const { gameId } = useParams();
@@ -69,63 +69,49 @@ const PreGame = () => {
 
 
     return (
-        <div className="justify-center items-center ">
-            {/* {
-                movArch.length > 0 && movArch.map((move: any, index) => {
-                    console.log("moves in ", move);
-                    return (
-                        <div key={index}>
-                            {move.san}
-                        </div>
-                    )
-                })
-            } */}
-            {/* {board.map((row, i) => {
-                return (
-                    <div key={i} className="flex transition duration-1000">
-                        {row.map((square, j) => {
-                            const squareRepresent = (String.fromCharCode(97 + (j % 8)) +
-                                "" +
-                                (8 - i)) as Square;
-                            return (
-                                <div
-                                    key={j}
-                                    className={`w-16 h-16 rounded-[1px] ${(i + j) % 2 === 0 ? "bg-[#769656]" : "bg-[#eeeed2]"
-                                        }`}
+        
+      
 
-                                >
-                                    <div className="w-full justify-center flex h-full">
-                                        <div className={`h-full justify-center flex flex-col `}>
-                                            {square ? (
-                                                <img
 
-                                                    src={`https://images.chesscomfiles.com/chess-themes/pieces/neo/150/${square?.color === "b"
-                                                        ? `b${square.type}`
-                                                        : `w${square.type}`
-                                                        }.png`}
-                                                    alt="Pieces"
-                                                />
-                                            ) : null}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                );
-            })} */}
-            <div className={`justify-center items-center `}>
-                <ChessBoard color={"b"} chess={chess} setBoard={setBoard} board={board} socket={socket} isArch={false} />
-            </div>
-            <div>
+      <div className='w-full min-h-screen bg-[#302E2B] relative justify-center py-4 px-3'>
+
+
+
+        <div className='flex justify-center items-center gap-8'>
+          
+
+          <div className={`justify-center items-center `}>
+          <ChessBoard color={"b"} chess={chess} setBoard={setBoard} board={board} socket={socket} isArch={false} />
+          </div>
+          
+          <div>
                 {
                     movArch.length > 0 && <MovesTable />
                 }
-            </div>
+
+          </div>
 
 
         </div>
+
+      </div>
+      
+    
+        
     )
 }
 
 export default PreGame
+
+
+// <div className="justify-center items-center ">
+            
+//             <div className={`justify-center items-center `}>
+//                 <ChessBoard color={"b"} chess={chess} setBoard={setBoard} board={board} socket={socket} isArch={false} />
+//             </div>
+//             <div>
+//                 
+//             </div>
+
+
+//         </div>
