@@ -19,6 +19,7 @@ wss.on('connection', function connection(ws) {
 // import express from "express"
 import express, { Request, Response } from "express";
 // const express=require('express');
+var bodyParser = require('body-parser')
 
 const app=express();
 
@@ -26,6 +27,7 @@ const app=express();
 // const database=require('./config/database');
 import { dbConnect } from "./config/database";
 import MoveDb from './models/MoveDb';
+import User from './models/User';
 const cookieParser=require("cookie-parser")
 
 const cors=require('cors');
@@ -41,6 +43,10 @@ const PORT=process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cookieParser());
+var jsonParser = bodyParser.json()
+ 
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 app.use(cors(
     {
@@ -72,7 +78,7 @@ app.get("/gamearchive/:id",async (req:Request,res:Response)=>{
   }
 
 })
-app.get("/move/:id",async (req:Request,res:Response)=>{
+app.get("/move/:id",urlencodedParser,async (req:Request,res:Response)=>{
   const gameId = req.params.id;
   try {
     const move:any  =  await MoveDb.findById({_id:gameId});
@@ -89,6 +95,37 @@ app.get("/move/:id",async (req:Request,res:Response)=>{
   }
 
 })
+
+app.get("/gamehistory/:id",async (req:Request,res:Response)=>{
+  console.log("reqqq")
+  const email=req.params.id;
+  console.log("email",email)
+  try {
+    const user=await User.findOne({email:email});
+    // const gameAsWhite = user.gameAsWhite;
+    // const gameAsBlack = user.gameAsBlack;
+    console.log("uuuser",user?.gameAsBlack)
+    const gameWhite = user?.gameAsBlack;
+    const gameBlack = user?.gameAsWhite;
+    
+    return res.status(200).json({
+      success: true,
+      gameWhite,
+      gameBlack
+    });
+
+    
+  } catch (error) {
+    console.log("game arch error",error);
+    return res.status(400).json({
+      success: false,
+      message: `Please Fill up All the Required Fields`,
+    });
+  }
+
+})
+
+
 
 
 app.listen(PORT,()=>{

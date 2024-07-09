@@ -12,6 +12,7 @@ import SignInPage from './Components/SignInPage';
 import { RecoilRoot } from 'recoil';
 import SignUpPage from './Components/SignUpPage';
 import PreGame from './Pages/PreGame';
+import GameArchieList from './Pages/GameArchieList';
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -28,7 +29,7 @@ function App() {
               <Route path='/sign-in' element={<SignInPage />} />
               <Route path='/sign-up' element={<SignUpPage />} />
               <Route path='/pregame/:gameId' element={<PreGame />} />
-
+              <Route path="pregames" element={<GameArchieList />} />
 
 
 
